@@ -20,3 +20,27 @@ user_artists_df['weight_quantiles'] = pd.qcut(user_artists_df['weight'],
                            precision=0)
 
 ```
+
+Upon categorizing the `weight` and renaming it `weight_quantiles` the observations are almost equally distributed within these categories the exact values counts can be seen below: 
+
+* 0    18770
+* 3    18581
+* 4    18548
+* 2    18469
+* 1    18466
+
+## `Train`/`Test` Split + Initializing Surprise Objects
+
+Next we perform a traditional train/test split of the `user_artists` data with a test-set size of `0.3`. Next is a crucial step when working with the `Surprise` library. The `Reader` class is used to parse our brand new ratings (`weight_quantiles`) based on given scale (1-5 of course). Secondly, a full dataset object is created for subsequent cross-validation as well as `Surprise`-specific trainset and testset objects. The code for this can be seen below: 
+
+``` Python
+#create reader object 
+reader = surprise.Reader(rating_scale=(1,5)) #1:5 scale 
+
+#create surprise train and test set objects
+data = surprise.Dataset.load_from_df(UA_df_cf[["userID","artistID","weight_quantiles"]], reader)
+UA_train = surprise.Dataset.load_from_df(UA_train, reader).build_full_trainset()
+UA_test = list(UA_test.itertuples(index=False, name=None))
+
+```
+
