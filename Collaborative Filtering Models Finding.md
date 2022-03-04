@@ -6,5 +6,5 @@ In terms of data wrangling, there was a minimal amount of manipulation required 
 
 However, instead of a discrete rating column, the `user_artist` data contains a continuous feature `weight` which indicates the number of songs played per artist for each unique user. A little visualization demonstrated a large amount of skew in this data: 
 
-![image](/Users/dimitrikestenbaum/Desktop/RecSys/PlayCountVsFrequency.png)
+![image](/PlayCountVsFrequency.png)
 
