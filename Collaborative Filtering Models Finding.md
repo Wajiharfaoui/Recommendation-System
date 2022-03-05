@@ -55,9 +55,8 @@ The next step is to explore what collaborative filtering algorithms or models fr
 * `NDCG`
 * `F1-Score`
 
-### Model Comparisons:
 
-* User-based KNNBasic: 
+### User-based KNNBasic: 
 
 ```Python
 #get baseline KNN score 
@@ -73,10 +72,95 @@ ubKNN.fit(UA_train)\
 .compute_similarities()
 
 ```
+`Impossible: 0.2671`
 
-* Baseline Results:
+Impossibility here indicates the porportion of the predictions that weren't possible due to cold-start issues (incomplete data). This is an important caveat considering this is one of the biggest weaknesses of collaborative filtering methods.   
+
+#### Baseline Results:
 
 ![image](/Data/User-BasedKNNEvalMetrics.png)
+
+
+### Item-based KNNBasic:
+
+```Python
+#get baseline KNN score 
+from surprise import KNNBasic
+
+# create options dict; use cosine similarity on user_based data
+options = {'name':'cosine', 'user_based':False}
+
+ibKNN = KNNBasic(k=20, min_k=2, sim_options=options, random_state=123)
+
+#create cosine similarity matrix
+ibKNN.fit(UA_train)\
+.compute_similarities()
+
+```
+`Impossible: 0.2012`
+
+#### Baseline Results:
+
+![image](/Data/Item-BasedKNNEvalMetrics.png)
+
+### BaselineOnly (ALS)
+
+```Python
+from surprise import BaselineOnly
+
+#alternating least squares (ALS) with 30 iterations
+options = {"method": "als", "n_epochs": 30}
+als = BaselineOnly(bsl_options=options)
+
+# fit on training set
+als.fit(UA_train)
+
+als_preds = als.test(UA_test)
+als_accuracy = accuracy.rmse(als_preds)
+```
+`Impossible: 0.0000`
+
+#### Baseline Results:
+
+![image](/Data/BaselineonlyEvalMetrics.png)
+
+### SVD (Matrix Factorization
+
+```Python
+from surprise import SVD
+
+# 20 factors non-bias
+svd = SVD(n_factors=20, biased=True, random_state=42)
+
+# fit on training set
+svd.fit(UA_train)
+
+svd_preds = svd.test(UA_test)
+svd_accuracy = accuracy.rmse(svd_preds)
+```
+`Impossible: 0.0000`
+
+#### Baseline Results:
+
+![image](/Data/SVDEvalMetrics.png)
+
+### CoClustering 
+
+```Python
+from surprise import CoClustering
+
+clust = CoClustering(n_cltr_u=10, n_cltr_i=10, n_epochs=50, random_state=42)
+
+clust.fit(UA_train)
+
+coclust_preds = clust.test(UA_test)
+accuracy.rmse(coclust_preds)
+```
+`Impossible: 0.0000`
+
+#### Baseline Results: 
+
+![image](/Data/CoClusterEvalMetrics.png)
 
 # Content Based Recommendation System 
 The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
