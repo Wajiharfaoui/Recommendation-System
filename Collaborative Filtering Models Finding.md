@@ -9,7 +9,7 @@ In terms of data wrangling, there was a minimal amount of manipulation required 
 
 However, instead of a discrete rating column, the `user_artist` data contains a continuous feature `weight` which indicates the number of songs played per artist for each unique user. A little visualization demonstrated a large amount of skew in this data: 
 
-![image](/PlayCountVsFrequency.png)
+![image](/Data/PlayCountVsFrequency.png)
 
 We can see in the figure above how left-skewed the `weight` data is. However, due to the scale of the horizontal axis, which represents frequency, the right-tail distribution caused by the skew is obfuscated from the chart. In fact the maximum `weight` is actually `352698` plays, but only has a frequency of one, therefore does not appear in this plot. 
 
@@ -46,16 +46,47 @@ UA_train = surprise.Dataset.load_from_df(UA_train, reader).build_full_trainset()
 UA_test = list(UA_test.itertuples(index=False, name=None))
 
 ```
+## Baseline Predictions
 
+The next step is to explore what collaborative filtering algorithms or models from `Surprise` package give us a decent baseline or benchmark estimation by evaluating predictions based on the following metrics: 
+
+* `RMSE`
+* `MAE`
+* `NDCG`
+* `F1-Score`
+
+### Model Comparisons:
+
+* User-based KNNBasic: 
+
+```Python
+#get baseline KNN score 
+from surprise import KNNBasic
+
+# create options dict; use cosine similarity on user_based data
+options = {'name':'cosine', 'user_based':True}
+
+ubKNN = KNNBasic(k=20, min_k=2, sim_options=options, random_state=123)
+
+#create cosine similarity matrix
+ubKNN.fit(UA_train)\
+.compute_similarities()
+
+```
+
+* Baseline Results:
+
+![image](/Data/User-Based KNN  Eval Metrics.png)
 
 # Content Based Recommendation System 
 The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
 We further discuss steps executed on these datasets in order to create the content matrix.
+
 ## Data preprocessing and content matrix for content-based recommendation system
 To being, we create a full-date variable column on user_taggedartists.dat. We can see that dates when users tagged artists are mostly frm 2000 and on. 
 
-![image](/TagsDistribution0.png)
-![image](/TagsDistribution1.png)
+![image](/Data/TagsDistribution0.png)
+![image](/Data/TagsDistribution1.png)
 
 We then proceed to create qualitative variables for the same data frame, and a recency variable column later, by categorizing dates artists were tagged by a user as "Very Old" if tagged before January 1970, "Old" if tagged before Jaunary 1984, "New" if tagged before January 2010 and "Very New" from January 2010 and further.
 
