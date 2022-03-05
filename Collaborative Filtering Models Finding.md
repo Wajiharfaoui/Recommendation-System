@@ -253,3 +253,70 @@ cb_res
 * F1	0.512814
 * NDCG@5	0.872620
 
+
+
+
+
+# Hybrid Recommender Systems
+
+Hybrid recommendation systems are not a fully independent class of algorithms. Rather they blend methods together in an effort to mitigate the drawbacks of individual techniques. In our case, we've experimented with a hybrid of our two best performing models: The SVD model fit with tuned hyperparameters and the content based model seen in the previous section. We also implemented a`Random Forest` hybrid model which is trained on the predictions of both the content based and SVD models and as well as the actual rating values as a target variable and then makes predictions of its own. 
+
+## SVD and Content Based Hybrid (Weighting)
+
+We applied a weighting method to prioritize the ratings of the better-performing model (content based), when aggregating the predicted ratings. No additional preprocessing was required for this. The code chunk below demonstrates how the weighting technique takes `0.6` (60%) of a content based prediction and then adds the remaining `0.4` (40%) to create a new hybrid prediction, can be seen below: 
+
+```Python
+#Combine predictions (weights)
+
+#extract predictions content-based and item-based
+df_pred_cb, df_pred_svd = pd.DataFrame(cb_pred), pd.DataFrame(svd_preds)
+
+df_hybrid = df_pred_cb.copy()
+df_hybrid['est'] = (np.array(df_pred_cb['est'])*0.6) + (np.array(df_pred_svd['est'])*0.4)
+```
+
+### Model Performance:
+
+Below we can see that ultimately this results in a lower `RMSE` than either of the individuals models produced of `0.871708`. However, we see some trade off for some of the other metrics such as `MAE`,`Recall`, and `NDCG@5`, which did not perform better than the individual models with respect to each indivual metric that was just enumerated. 
+
+![image](/Data/HybridWeightedEvalMetrics.png)
+
+## Random Forest Hybrid 
+
+### Data Preprocesing: 
+
+The first step here is creating a new train test split to evaluate this models performance. Next we create a new data frame that contains three columns. A target column with the actual labels for each oberservation as well as a column for the predictions of both the SVD model and the content based model respectively. Finally, these are split into a df `X` which contains the features, and a vector `y` which contains the labels. The code for this can be seen in the code chunk below: 
+
+```Python
+#Random Forest Hybrid 
+df_cb_train, df_cb_test = df_pred_cb[:19500], df_pred_cb[19500:]
+df_svd_train, df_svd_test = df_pred_svd[:19500], df_pred_svd[19500:]
+
+rf_data = df_cb_train[['r_ui', 'est']].rename(columns={'r_ui':'target', 'est':'cb_pred'})
+rf_data['svd_pred'] = df_svd_train['est']
+
+rf_test = df_cb_test[['r_ui', 'est']].rename(columns={'r_ui':'target', 'est':'cb_pred'})
+rf_test['svd_pred'] = df_svd_test['est']
+
+from sklearn.ensemble import RandomForestRegressor
+
+X, y = rf_data.loc[:,rf_data.columns != 'target'], np.array(rf_data['target'])
+X_test = rf_test.loc[:,rf_test.columns != 'target']
+
+#fit random forest model
+rf_model = RandomForestRegressor(max_depth=4, n_estimators=100).fit(X,y)
+
+#predict
+rf_pred = rf_model.predict(X_test)
+
+# transform in surprise format
+df_rf = df_cb_test.copy()
+df_rf['est'] = rf_pred
+```
+
+
+
+
+
+# Conclusion
+
