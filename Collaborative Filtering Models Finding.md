@@ -66,7 +66,7 @@ To create content matrix, we pivot the merged table twice in order to turn categ
 ``` Python
 cb.head()
 ```
-## Applying the model
+## Applying content based model
 
 We initiate the model at NN = 10, filtering the matrix for 10 nearest neighbors with non-negative similarity.
 Then, we fit on content using content matrix, and on ratings using train dataset. 
