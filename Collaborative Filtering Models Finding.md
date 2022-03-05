@@ -1,3 +1,6 @@
+# Introduction 
+In this project we will be improvinge Recommendation Systems of "LastFM", a music streaming platform. Currently the company only recommends top 10 most popular artists to all users. We aim to increase user engagement with the platform by applying item, user and content based recommendation systems. 
+
 # Collaborative Filtering Models Findings Report 
 
 ## Data Preprocessing for `Surprise`
@@ -43,4 +46,55 @@ UA_train = surprise.Dataset.load_from_df(UA_train, reader).build_full_trainset()
 UA_test = list(UA_test.itertuples(index=False, name=None))
 
 ```
+
+
+# Content Based Recommendation System 
+The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
+We further discuss steps executed on these datasets in order to create the content matrix.
+## Data preprocessing and content matrix for content-based recommendation system
+To being, we create a full-date variable column on user_taggedartists.dat. We can see that dates when users tagged artists are mostly frm 2000 and on. 
+
+![image](/TagsDistribution0.png)
+![image](/TagsDistribution1.png)
+
+We then proceed to create qualitative variables for the same data frame, and a recency variable column later, by categorizing dates artists were tagged by a user as "Very Old" if tagged before January 1970, "Old" if tagged before Jaunary 1984, "New" if tagged before January 2010 and "Very New" from January 2010 and further.
+
+We then merge the two data frames, one containing a tag value of each tag ID, and the other one containg UserID, Artist ID and Recency value. 
+
+To create content matrix, we pivot the merged table twice in order to turn categorical variables in dummy variables. Then, two pivoted tables merged together are combined into a content matrix, with ArtistID as an index and Genre and Recency as variables. The resulting matrix is: 
+
+``` Python
+cb.head()
+```
+## Applying the model
+
+We initiate the model at NN = 10, filtering the matrix for 10 nearest neighbors with non-negative similarity.
+Then, we fit on content using content matrix, and on ratings using train dataset. 
+
+``` Python
+# init content-based
+cb_mod = ContentBased(NN=10)
+
+# fit on content
+cb_mod.fit(cb)
+
+# fit on train_ratings
+cb_mod.fit_ratings(UA_train)
+
+cb_pred = cb_mod.test(UA_test)
+```
+We get the following evaluation results: 
+
+``` Python
+# compute metrics for CB RS
+cb_res = eval.evaluate(cb_pred, topn=5, rating_cutoff=3.5).rename(columns={'value':'Content_based_10'})
+cb_res
+```
+
+* RMSE	0.891378
+* MAE	0.669223
+* Recall	0.386871
+* Precision	0.760339
+* F1	0.512814
+* NDCG@5	0.872620
 
