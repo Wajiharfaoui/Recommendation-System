@@ -162,6 +162,46 @@ accuracy.rmse(coclust_preds)
 
 ![image](/Data/CoClusterEvalMetrics.png)
 
+## Baseline Consensus:
+
+By comparing evaluation metrics we can see there's a clear winner in terms of baseline perfomance, `SVD`.
+Which trumps all other models across all evaluation metrics besides `recall`. 
+
+## Hyperparameter Tuning
+
+Given we've identified which model works best with our data. Next we perform a cross-validated grid search to find which hyperparameter combinations produce the best results. The grid search we ran can be seen in the code chunk below. 
+
+```Python
+grid search cross validation
+
+param_grid = {'n_factors':[20,50,150,200],
+             #'n_epochs':[20,50],
+             #'lr_all':[0.005, 0.001, 0.002],
+             #'biased':[True],
+             #'reg_all':[0.01,0.02]}
+
+3-fold grid searched cv 
+SVD_cv_grid = GridSearchCV(SVD,
+                             param_grid=param_grid,
+                             measures=['rmse','mae'],
+                             cv=3)
+SVD_cv_grid.fit(data)
+```
+
+## Final Model `train`, `predict`, and `evaluate`
+
+```Python
+# with tuned hyperparameters
+svd_best = SVD(n_factors=20, n_epochs=20,lr_all=0.005, biased=True, reg_all=0.01, random_state=42)
+
+# fit on training set
+svd_best.fit(UA_train)
+```
+
+![image](/Data/BestSVDEvalMetrics.png)
+
+We can see from the above evaluation metrics we have indeed lowered the `RMSE` of the baseline predictions by a very small relatively negligible margin. Through this benchmarking evaluation process we have select the `SVD` model as the most effective collaborative filtering model for this problem.
+
 # Content Based Recommendation System 
 The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
 We further discuss steps executed on these datasets in order to create the content matrix.
