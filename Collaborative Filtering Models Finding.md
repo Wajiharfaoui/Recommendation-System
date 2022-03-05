@@ -1,3 +1,6 @@
+# Introduction 
+In this project we will be improvinge Recommendation Systems of "LastFM", a music streaming platform. Currently the company only recommends top 10 most popular artists to all users. We aim to increase user engagement with the platform by applying item, user and content based recommendation systems. 
+
 # Collaborative Filtering Models Findings Report 
 
 ## Data Preprocessing for `Surprise`
@@ -6,7 +9,7 @@ In terms of data wrangling, there was a minimal amount of manipulation required 
 
 However, instead of a discrete rating column, the `user_artist` data contains a continuous feature `weight` which indicates the number of songs played per artist for each unique user. A little visualization demonstrated a large amount of skew in this data: 
 
-![image](/PlayCountVsFrequency.png)
+![image](/Data/PlayCountVsFrequency.png)
 
 We can see in the figure above how left-skewed the `weight` data is. However, due to the scale of the horizontal axis, which represents frequency, the right-tail distribution caused by the skew is obfuscated from the chart. In fact the maximum `weight` is actually `352698` plays, but only has a frequency of one, therefore does not appear in this plot. 
 
@@ -43,4 +46,210 @@ UA_train = surprise.Dataset.load_from_df(UA_train, reader).build_full_trainset()
 UA_test = list(UA_test.itertuples(index=False, name=None))
 
 ```
+## Baseline Predictions
+
+The next step is to explore what collaborative filtering algorithms or models from `Surprise` package give us a decent baseline or benchmark estimation by evaluating predictions based on the following metrics: 
+
+* `RMSE`
+* `MAE`
+* `NDCG`
+* `F1-Score`
+
+
+### User-based KNNBasic: 
+
+```Python
+#get baseline KNN score 
+from surprise import KNNBasic
+
+# create options dict; use cosine similarity on user_based data
+options = {'name':'cosine', 'user_based':True}
+
+ubKNN = KNNBasic(k=20, min_k=2, sim_options=options, random_state=123)
+
+#create cosine similarity matrix
+ubKNN.fit(UA_train)\
+.compute_similarities()
+
+```
+`Impossible: 0.2671`
+
+Impossibility here indicates the porportion of the predictions that weren't possible due to cold-start issues (incomplete data). This is an important caveat considering this is one of the biggest weaknesses of collaborative filtering methods.   
+
+#### Baseline Results:
+
+![image](/Data/User-BasedKNNEvalMetrics.png)
+
+
+### Item-based KNNBasic:
+
+```Python
+#get baseline KNN score 
+from surprise import KNNBasic
+
+# create options dict; use cosine similarity on user_based data
+options = {'name':'cosine', 'user_based':False}
+
+ibKNN = KNNBasic(k=20, min_k=2, sim_options=options, random_state=123)
+
+#create cosine similarity matrix
+ibKNN.fit(UA_train)\
+.compute_similarities()
+
+```
+`Impossible: 0.2012`
+
+#### Baseline Results:
+
+![image](/Data/Item-BasedKNNEvalMetrics.png)
+
+### BaselineOnly (ALS)
+
+```Python
+from surprise import BaselineOnly
+
+#alternating least squares (ALS) with 30 iterations
+options = {"method": "als", "n_epochs": 30}
+als = BaselineOnly(bsl_options=options)
+
+# fit on training set
+als.fit(UA_train)
+
+als_preds = als.test(UA_test)
+als_accuracy = accuracy.rmse(als_preds)
+```
+`Impossible: 0.0000`
+
+#### Baseline Results:
+
+![image](/Data/BaselineonlyEvalMetrics.png)
+
+### SVD (Matrix Factorization
+
+```Python
+from surprise import SVD
+
+# 20 factors non-bias
+svd = SVD(n_factors=20, biased=True, random_state=42)
+
+# fit on training set
+svd.fit(UA_train)
+
+svd_preds = svd.test(UA_test)
+svd_accuracy = accuracy.rmse(svd_preds)
+```
+`Impossible: 0.0000`
+
+#### Baseline Results:
+
+![image](/Data/SVDEvalMetrics.png)
+
+### CoClustering 
+
+```Python
+from surprise import CoClustering
+
+clust = CoClustering(n_cltr_u=10, n_cltr_i=10, n_epochs=50, random_state=42)
+
+clust.fit(UA_train)
+
+coclust_preds = clust.test(UA_test)
+accuracy.rmse(coclust_preds)
+```
+`Impossible: 0.0000`
+
+#### Baseline Results: 
+
+![image](/Data/CoClusterEvalMetrics.png)
+
+## Baseline Consensus:
+
+By comparing evaluation metrics we can see there's a clear winner in terms of baseline perfomance, `SVD`.
+Which trumps all other models across all evaluation metrics besides `recall`. 
+
+## Hyperparameter Tuning
+
+Given we've identified which model works best with our data. Next we perform a cross-validated grid search to find which hyperparameter combinations produce the best results. The grid search we ran can be seen in the code chunk below. 
+
+```Python
+grid search cross validation
+
+param_grid = {'n_factors':[20,50,150,200],
+             #'n_epochs':[20,50],
+             #'lr_all':[0.005, 0.001, 0.002],
+             #'biased':[True],
+             #'reg_all':[0.01,0.02]}
+
+3-fold grid searched cv 
+SVD_cv_grid = GridSearchCV(SVD,
+                             param_grid=param_grid,
+                             measures=['rmse','mae'],
+                             cv=3)
+SVD_cv_grid.fit(data)
+```
+
+## Final Model `train`, `predict`, and `evaluate`
+
+```Python
+# with tuned hyperparameters
+svd_best = SVD(n_factors=20, n_epochs=20,lr_all=0.005, biased=True, reg_all=0.01, random_state=42)
+
+# fit on training set
+svd_best.fit(UA_train)
+```
+
+![image](/Data/BestSVDEvalMetrics.png)
+
+We can see from the above evaluation metrics we have indeed lowered the `RMSE` of the baseline predictions by a very small relatively negligible margin. Through this benchmarking evaluation process we have select the `SVD` model as the most effective collaborative filtering model for this problem.
+
+# Content Based Recommendation System 
+The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
+We further discuss steps executed on these datasets in order to create the content matrix.
+
+## Data preprocessing and content matrix for content-based recommendation system
+To being, we create a full-date variable column on user_taggedartists.dat. We can see that dates when users tagged artists are mostly frm 2000 and on. 
+
+![image](/Data/TagsDistribution0.png)
+![image](/Data/TagsDistribution1.png)
+
+We then proceed to create qualitative variables for the same data frame, and a recency variable column later, by categorizing dates artists were tagged by a user as "Very Old" if tagged before January 1970, "Old" if tagged before Jaunary 1984, "New" if tagged before January 2010 and "Very New" from January 2010 and further.
+
+We then merge the two data frames, one containing a tag value of each tag ID, and the other one containg UserID, Artist ID and Recency value. 
+
+To create content matrix, we pivot the merged table twice in order to turn categorical variables in dummy variables. Then, two pivoted tables merged together are combined into a content matrix, with ArtistID as an index and Genre and Recency as variables. The resulting matrix is: 
+
+``` Python
+cb.head()
+```
+## Applying content based model
+
+We initiate the model at NN = 10, filtering the matrix for 10 nearest neighbors with non-negative similarity.
+Then, we fit on content using content matrix, and on ratings using train dataset. 
+
+``` Python
+# init content-based
+cb_mod = ContentBased(NN=10)
+
+# fit on content
+cb_mod.fit(cb)
+
+# fit on train_ratings
+cb_mod.fit_ratings(UA_train)
+
+cb_pred = cb_mod.test(UA_test)
+```
+We get the following evaluation results: 
+
+``` Python
+# compute metrics for CB RS
+cb_res = eval.evaluate(cb_pred, topn=5, rating_cutoff=3.5).rename(columns={'value':'Content_based_10'})
+cb_res
+```
+
+* RMSE	0.891378
+* MAE	0.669223
+* Recall	0.386871
+* Precision	0.760339
+* F1	0.512814
+* NDCG@5	0.872620
 
