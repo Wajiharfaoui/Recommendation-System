@@ -76,7 +76,7 @@ ubKNN.fit(UA_train)\
 
 * Baseline Results:
 
-![image](/Data/User-BasedKNNEvalMetrics)
+![image](/Data/User-BasedKNNEvalMetrics.png)
 
 # Content Based Recommendation System 
 The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
