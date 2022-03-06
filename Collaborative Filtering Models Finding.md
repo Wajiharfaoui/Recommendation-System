@@ -1,7 +1,18 @@
-# Introduction 
-In this project we will be improvinge Recommendation Systems of "LastFM", a music streaming platform. Currently the company only recommends top 10 most popular artists to all users. We aim to increase user engagement with the platform by applying item, user and content based recommendation systems. 
+# Overview 
+
+![image](/Data/last.fm.png)
+
+The purpose of this report is to document and benchmark different classes of recommendation system algorithms our team applied with the objective of improving LastFMs current recommendation system (non-personalized top 10 recommender). Our ultimate goal with this project is to replace LastFMs simplistic recommender system with a more sophisticated model that provides diverse personalized recommendations that will significantly boost the quality of UX, subsequently improving LastFMs product. 
+The recommendation techniques that will be explored and benchmarked include:
+
+* Collaborative Filtering 
+* Content-Based Recommendation
+* Hybrid Recommenders 
+
 
 # Collaborative Filtering Models Findings Report 
+
+Collaborative filtering hinges on the idea that we can predict a users preferences based on the preferences of users as well as predict the rating a user would giveitems based on their interactions with other items. It uses matrices of rating scores indexed by users and items respectively, and then computes a similarity measure: `cosine similarity` or `pearson correlation`, between vectors of ratings. The largest drawback to collaborative filtering models is that if they lack information for a new product or user, this poses the cold-start issue. This means predictions cannot be made as they would for users and items with more complete information on interaction. 
 
 ## Data Preprocessing for `Surprise`
 
@@ -202,6 +213,7 @@ svd_best.fit(UA_train)
 
 We can see from the above evaluation metrics we have indeed lowered the `RMSE` of the baseline predictions by a very small relatively negligible margin. Through this benchmarking evaluation process we have select the `SVD` model as the most effective collaborative filtering model for this problem.
 
+
 # Content Based Recommendation System 
 The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
 We further discuss steps executed on these datasets in order to create the content matrix.
@@ -259,7 +271,7 @@ cb_res
 
 # Hybrid Recommender Systems
 
-Hybrid recommendation systems are not a fully independent class of algorithms. Rather they blend methods together in an effort to mitigate the drawbacks of individual techniques. In our case, we've experimented with a hybrid of our two best performing models: The SVD model fit with tuned hyperparameters and the content based model seen in the previous section. We also implemented a`Random Forest` hybrid model which is trained on the predictions of both the content based and SVD models and as well as the actual rating values as a target variable and then makes predictions of its own. 
+Hybrid recommendation systems are not a fully independent class of algorithms. Rather they blend methods together in an effort to mitigate the drawbacks of individual techniques. In our case, we've experimented with a hybrid of our two best performing models: The SVD model fit with tuned hyperparameters and the content based model seen in the previous section. We also implemented a`Random Forest` hybrid model which is trained on the predictions of both the content based and SVD models and as well as the actual rating values as a target variable and then makes predictions of its own. However, since hybrid systems aggregate different techniques they can inherit the drawbacks of the models used as well.
 
 ## SVD and Content Based Hybrid (Weighting)
 
@@ -313,10 +325,6 @@ rf_pred = rf_model.predict(X_test)
 df_rf = df_cb_test.copy()
 df_rf['est'] = rf_pred
 ```
-
-
-
-
 
 # Conclusion
 
