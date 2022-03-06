@@ -328,3 +328,14 @@ df_rf['est'] = rf_pred
 
 # Conclusion
 
+After trying different recommendation systems to the LastFM dataset, evaluating and comapring them, we ended up going with the hybrid system as we believe that it would be a better solution since it will take both the tags of the artists and similaritites of these artists and users into account. Hence, it could be a good solutions to problems such as overspecialization, providing users with more novelty and accurate predictions.  
+
+As an enhancement to the LastFM's non-personalized recommendation system, and with the ubiquity of data collection, we saw that different recommandation strategies can be applied based on the context of each experience such as the webpage to deploy it on, as well as the user's recency.  
+
+To do so, we thought about categorizing our users into 3 different types:  
+
+- First-time visitor: for this type of users, that we don't have any historical data of their musical taste and preferences, we can display `Top artists` on the homepage. The system will give more weight to recent ratings over historical ones and updates scores every time a data feed is synchronized (*non-personalised method*).
+
+- Seasonal visitor: for users that don't have frequent activities on the plateform, we may based our recommendations to them on more-specific strategy which is `Most Popular in Category` strategy, that not only promote the most popular artists but includes artist from music genres that he already liked and music genres that are similar to them (*item-based method*).  
+
+- Frequent visitor: this category, will have the `most personnalised recommendation` since we already collected an important amount of data about their behaviours. The system that we can deploy will surface suggestions of artists for our users based on the user's persona similarity with other users, the similaritties of artists in addition to the genres and release date affinity (*hybrid method*)  
