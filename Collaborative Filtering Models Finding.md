@@ -1,6 +1,6 @@
 # Overview 
 
-![image](/Data/last.fm.png)
+![image](./Data/last.fm.png)
 
 The purpose of this report is to document and benchmark different classes of recommendation system algorithms our team applied with the objective of improving LastFMs current recommendation system (non-personalized top 10 recommender). Our ultimate goal with this project is to replace LastFMs simplistic recommender system with a more sophisticated model that provides diverse personalized recommendations that will significantly boost the quality of UX, subsequently improving LastFMs product. 
 The recommendation techniques that will be explored and benchmarked include:
@@ -20,7 +20,7 @@ In terms of data wrangling, there was a minimal amount of manipulation required 
 
 However, instead of a discrete rating column, the `user_artist` data contains a continuous feature `weight` which indicates the number of songs played per artist for each unique user. A little visualization demonstrated a large amount of skew in this data: 
 
-![image](/Data/PlayCountVsFrequency.png)
+![image](./Data/PlayCountVsFrequency.png)
 
 We can see in the figure above how left-skewed the `weight` data is. However, due to the scale of the horizontal axis, which represents frequency, the right-tail distribution caused by the skew is obfuscated from the chart. In fact the maximum `weight` is actually `352698` plays, but only has a frequency of one, therefore does not appear in this plot. 
 
@@ -89,7 +89,7 @@ Impossibility here indicates the porportion of the predictions that weren't poss
 
 #### Baseline Results:
 
-![image](/Data/User-BasedKNNEvalMetrics.png)
+![image](./Data/User-BasedKNNEvalMetrics.png)
 
 
 ### Item-based KNNBasic:
@@ -112,7 +112,7 @@ ibKNN.fit(UA_train)\
 
 #### Baseline Results:
 
-![image](/Data/Item-BasedKNNEvalMetrics.png)
+![image](./Data/Item-BasedKNNEvalMetrics.png)
 
 ### BaselineOnly (ALS)
 
@@ -133,7 +133,7 @@ als_accuracy = accuracy.rmse(als_preds)
 
 #### Baseline Results:
 
-![image](/Data/BaselineonlyEvalMetrics.png)
+![image](./Data/BaselineonlyEvalMetrics.png)
 
 ### SVD (Matrix Factorization
 
@@ -153,7 +153,7 @@ svd_accuracy = accuracy.rmse(svd_preds)
 
 #### Baseline Results:
 
-![image](/Data/SVDEvalMetrics.png)
+![image](./Data/SVDEvalMetrics.png)
 
 ### CoClustering 
 
@@ -171,7 +171,7 @@ accuracy.rmse(coclust_preds)
 
 #### Baseline Results: 
 
-![image](/Data/CoClusterEvalMetrics.png)
+![image](./Data/CoClusterEvalMetrics.png)
 
 ## Baseline Consensus:
 
@@ -209,7 +209,7 @@ svd_best = SVD(n_factors=20, n_epochs=20,lr_all=0.005, biased=True, reg_all=0.01
 svd_best.fit(UA_train)
 ```
 
-![image](/Data/BestSVDEvalMetrics.png)
+![image](./Data/BestSVDEvalMetrics.png)
 
 We can see from the above evaluation metrics we have indeed lowered the `RMSE` of the baseline predictions by a very small relatively negligible margin. Through this benchmarking evaluation process we have select the `SVD` model as the most effective collaborative filtering model for this problem.
 
@@ -225,8 +225,8 @@ We further discuss steps executed on these datasets in order to create the conte
 ## Data preprocessing and content matrix for content-based recommendation system
 To being, we create a full-date variable column on user_taggedartists.dat. We can see that dates when users tagged artists are mostly frm 2000 and on. 
 
-![image](/Data/TagsDistribution0.png)
-![image](/Data/TagsDistribution1.png)
+![image](./Data/TagsDistribution0.png)
+![image](./Data/TagsDistribution1.png)
 
 We then proceed to create qualitative variables for the same data frame, and a recency variable column later, by categorizing dates artists were tagged by a user as "Very Old" if tagged before January 1970, "Old" if tagged before Jaunary 1984, "New" if tagged before January 2010 and "Very New" from January 2010 and further.
 
@@ -234,7 +234,7 @@ We then merge the two data frames, one containing a tag value of each tag ID, an
 
 To create content matrix, we pivot the merged table twice in order to turn categorical variables in dummy variables. Then, two pivoted tables merged together are combined into a content matrix, with ArtistID as an index and Genre and Recency as variables. The resulting matrix is:
 
-![image](/Data/matrix_cb.png)
+![image](./Data/matrix_cb.png)
 ## Applying content based model
 
 We initiate the model at NN = 10, filtering the matrix for 10 nearest neighbors with non-negative similarity.
@@ -260,7 +260,7 @@ cb_res = eval.evaluate(cb_pred, topn=5, rating_cutoff=3.5).rename(columns={'valu
 cb_res
 ```
 
-![image](/Data/ContentBased_resulst.png)
+![image](./Data/ContentBased_resulst.png)
 
 Comparing to collaborative filtering, so far, content based gives a better performance. But let's take a look at hybrid recommendation systems.
 
@@ -286,7 +286,7 @@ df_hybrid['est'] = (np.array(df_pred_cb['est'])*0.6) + (np.array(df_pred_svd['es
 
 Below we can see that ultimately this results in a lower `RMSE` than either of the individuals models produced of `0.871708`. However, we see some trade off for some of the other metrics such as `MAE`,`Recall`, and `NDCG@5`, which did not perform better than the individual models with respect to each indivual metric that was just enumerated. 
 
-![image](/Data/HybridWeightedEvalMetrics.png)
+![image](./Data/HybridWeightedEvalMetrics.png)
 
 ## Random Forest Hybrid 
 
