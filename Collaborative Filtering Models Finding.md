@@ -262,7 +262,7 @@ cb_res
 
 ![image](/Data/ContentBased_resulst.png)
 
-
+Comparing to collaborative filtering, so far, content based gives a better performance. But let's take a look at hybrid recommendation systems.
 
 # Hybrid Recommender Systems
 
