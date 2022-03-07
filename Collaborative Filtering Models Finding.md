@@ -215,6 +215,10 @@ We can see from the above evaluation metrics we have indeed lowered the `RMSE` o
 
 
 # Content Based Recommendation System 
+Content based systems are based on the description of the item and user's preference towards the item. In our case we create a content matrix of genres and recency for each artist, and fit on the ratings assigned by the users for these artists to come up with recommendations for the users. The system will recommend the artists similar to those user already likes based on the cosine similarities matrix. 
+Content Based Recommendation Systems are considered very adaptive and user-tailored. They can make highly precise recommendation for each user. Since the similarity is computed between artists/items, new artists can be suggested regardless of how many users rated them. 
+However, similar to collaborative filtering systems, content based recommender system gives a cold start for the new users, as there is not much data available to make a prediction. Besides, content based recommender systems tend to overspecialize, by recommending artists for the users that are very similar to those they already listen to, keeping the user in the same consumption bubble. 
+
 The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
 We further discuss steps executed on these datasets in order to create the content matrix.
 
@@ -228,11 +232,9 @@ We then proceed to create qualitative variables for the same data frame, and a r
 
 We then merge the two data frames, one containing a tag value of each tag ID, and the other one containg UserID, Artist ID and Recency value. 
 
-To create content matrix, we pivot the merged table twice in order to turn categorical variables in dummy variables. Then, two pivoted tables merged together are combined into a content matrix, with ArtistID as an index and Genre and Recency as variables. The resulting matrix is: 
+To create content matrix, we pivot the merged table twice in order to turn categorical variables in dummy variables. Then, two pivoted tables merged together are combined into a content matrix, with ArtistID as an index and Genre and Recency as variables. The resulting matrix is:
 
-``` Python
-cb.head()
-```
+![image](/Data/matrix_cb.png)
 ## Applying content based model
 
 We initiate the model at NN = 10, filtering the matrix for 10 nearest neighbors with non-negative similarity.
@@ -258,14 +260,7 @@ cb_res = eval.evaluate(cb_pred, topn=5, rating_cutoff=3.5).rename(columns={'valu
 cb_res
 ```
 
-* RMSE	0.891378
-* MAE	0.669223
-* Recall	0.386871
-* Precision	0.760339
-* F1	0.512814
-* NDCG@5	0.872620
-
-
+![image](/Data/ContentBased_resulst.png)
 
 
 
