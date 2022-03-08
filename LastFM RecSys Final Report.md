@@ -1,3 +1,6 @@
+Contributors: Wajih Arfaoui, Dilda Zhaksybek, and Dimitri Kestenbaum \
+IÉSEG School of Management MBD Big Data Analytics
+
 # Overview 
 
 ![image](./Data/last.fm.png)
