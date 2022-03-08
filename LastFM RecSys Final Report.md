@@ -341,3 +341,9 @@ To do so, we thought about categorizing our users into 3 different types:
 * Seasonal visitor: for users that don't have frequent activities on the platform, we may base our recommendations to them on a more user-specific strategy which is `Most Popular in Category` strategy, that not only promote the most popular artists but includes artist from music genres that they already liked and music genres that are similar to them (*item-based method*).  
 
 * Frequent visitor: this category, will have the `Most Personnalised Recommendation` since we already collected an important amount of data about their behaviours. The system that we can deploy will surface suggestions of artists for our users based on the user's personal similarity with other users, the similarities of artists in addition to the genres and release date affinity (*hybrid method*). 
+
+# References:
+
+*“Welcome to Surprise' Documentation!¶.” Welcome to Surprise' Documentation! - Surprise 1 Documentation, https://surprise.readthedocs.io/en/stable/.*
+
+*Luo, Shuyu. “Intro to Recommender System: Collaborative Filtering.” Medium, Towards Data Science, 6 Feb. 2019, https://towardsdatascience.com/intro-to-recommender-system-collaborative-filtering-64a238194a26.*
