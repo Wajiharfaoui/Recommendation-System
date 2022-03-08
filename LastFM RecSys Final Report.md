@@ -3,7 +3,7 @@ IÉSEG School of Management MBD Big Data Analytics
 
 # Overview 
 
-![image](./Data/last.fm.png)
+[<img src="./Data/last.fm.png" width="100"/>](./Data/last.fm.png)
 
 The purpose of this report is to document and benchmark different classes of recommendation system algorithms our team applied with the objective of improving LastFMs current recommendation system (non-personalized top 10 recommender). Our ultimate goal with this project is to replace LastFMs simplistic recommender system with a more sophisticated model that provides diverse personalized recommendations that will significantly boost the quality of UX, subsequently improving LastFMs product. 
 The recommendation techniques that will be explored and benchmarked include:
@@ -23,7 +23,7 @@ In terms of data wrangling, there was a minimal amount of manipulation required 
 
 However, instead of a discrete rating column, the `user_artist` data contains a continuous feature `weight` which indicates the number of songs played per artist for each unique user. A little visualization demonstrated a large amount of skew in this data: 
 
-![image](./Data/PlayCountVsFrequency.png)
+[<center><img src="./Data/PlayCountVsFrequency.png"/></center>](./Data/PlayCountVsFrequency.png)
 
 We can see in the figure above how left-skewed the `weight` data is. However, due to the scale of the horizontal axis, which represents frequency, the right-tail distribution caused by the skew is obfuscated from the chart. In fact the maximum `weight` is actually `352698` plays, but only has a frequency of one, therefore does not appear in this plot. 
 
@@ -92,7 +92,7 @@ Impossibility here indicates the porportion of the predictions that weren't poss
 
 #### Baseline Results:
 
-![image](./Data/User-BasedKNNEvalMetrics.png)
+[<center><img src="./Data/User-BasedKNNEvalMetrics.png" height="30%" width="40%"></center>](./Data/User-BasedKNNEvalMetrics.png)
 
 
 ### Item-based KNNBasic:
@@ -115,7 +115,7 @@ ibKNN.fit(UA_train)\
 
 #### Baseline Results:
 
-![image](./Data/Item-BasedKNNEvalMetrics.png)
+[<center><img src="./Data/Item-BasedKNNEvalMetrics.png" height="300px" width="40%"></center>](./Data/Item-BasedKNNEvalMetrics.png)
 
 ### BaselineOnly (ALS)
 
@@ -136,7 +136,7 @@ als_accuracy = accuracy.rmse(als_preds)
 
 #### Baseline Results:
 
-![image](./Data/BaselineonlyEvalMetrics.png)
+[<center><img src="./Data/BaselineonlyEvalMetrics.png" height="300px" width="40%"></center>](./Data/BaselineonlyEvalMetrics.png)
 
 ### SVD (Matrix Factorization
 
@@ -156,7 +156,7 @@ svd_accuracy = accuracy.rmse(svd_preds)
 
 #### Baseline Results:
 
-![image](./Data/SVDEvalMetrics.png)
+[<center><img src="./Data/SVDEvalMetrics.png" height="300px" width="40%"></center>](./Data/SVDEvalMetrics.png)
 
 ### CoClustering 
 
@@ -174,7 +174,7 @@ accuracy.rmse(coclust_preds)
 
 #### Baseline Results: 
 
-![image](./Data/CoClusterEvalMetrics.png)
+[<center><img src="./Data/CoClusterEvalMetrics.png" height="300px" width="40%"></center>](./Data/CoClusterEvalMetrics.png)
 
 ## Baseline Consensus:
 
@@ -212,7 +212,7 @@ svd_best = SVD(n_factors=20, n_epochs=20,lr_all=0.005, biased=True, reg_all=0.01
 svd_best.fit(UA_train)
 ```
 
-![image](./Data/BestSVDEvalMetrics.png)
+[<center><img src="./Data/BestSVDEvalMetrics.png" height="30%" width="40%"></center>](./Data/BestSVDEvalMetrics.png)
 
 We can see from the above evaluation metrics we have indeed lowered the `RMSE` of the baseline predictions by a very small relatively negligible margin. Through this benchmarking evaluation process we have select the `SVD` model as the most effective collaborative filtering model for this problem.
 
@@ -224,12 +224,15 @@ However, similar to collaborative filtering systems, content based recommender s
 
 The matrix for Content based recommendation systems is created using two data frames: user_taggedartists.dat and tags.dat.
 We further discuss steps executed on these datasets in order to create the content matrix.
+<br />  
+<br />
+<br />
 
 ## Data preprocessing and content matrix for content-based recommendation system
 To being, we create a full-date variable column on user_taggedartists.dat. We can see that dates when users tagged artists are mostly frm 2000 and on. 
 
-![image](./Data/TagsDistribution0.png)
-![image](./Data/TagsDistribution1.png)
+[<center><img src="./Data/TagsDistribution0.png"></center>](./Data/TagsDistribution0.png)
+[<center><img src="./Data/TagsDistribution1.png"></center>](./Data/TagsDistribution1.png)
 
 We then proceed to create qualitative variables for the same data frame, and a recency variable column later, by categorizing dates artists were tagged by a user as "Very Old" if tagged before January 1970, "Old" if tagged before Jaunary 1984, "New" if tagged before January 2010 and "Very New" from January 2010 and further.
 
@@ -263,7 +266,7 @@ cb_res = eval.evaluate(cb_pred, topn=5, rating_cutoff=3.5).rename(columns={'valu
 cb_res
 ```
 
-![image](./Data/ContentBased_resulst.png)
+[<center><img src="./Data/ContentBased_resulst.png" height="30%" width="40%"></center>](./Data/ContentBased_resulst.png)
 
 Comparing to collaborative filtering, so far, content based gives a better performance. But let's take a look at hybrid recommendation systems.
 
@@ -289,7 +292,7 @@ df_hybrid['est'] = (np.array(df_pred_cb['est'])*0.6) + (np.array(df_pred_svd['es
 
 Below we can see that ultimately this results in a lower `RMSE` than either of the individuals models produced of `0.871708`. However, we see some trade off for some of the other metrics such as `MAE`,`Recall`, and `NDCG@5`, which did not perform better than the individual models with respect to each indivual metric that was just enumerated. 
 
-![image](./Data/HybridWeightedEvalMetrics.png)
+[<center><img src="./Data/HybridWeightedEvalMetrics.png" height="30%" width="40%"></center>](./Data/HybridWeightedEvalMetrics.png)
 
 ## Random Forest Hybrid 
 
@@ -340,10 +343,21 @@ To do so, we thought about categorizing our users into 3 different types:
 
 * Seasonal visitor: for users that don't have frequent activities on the platform, we may base our recommendations to them on a more user-specific strategy which is `Most Popular in Category` strategy, that not only promote the most popular artists but includes artist from music genres that they already liked and music genres that are similar to them (*item-based method*).  
 
-* Frequent visitor: this category, will have the `Most Personnalised Recommendation` since we already collected an important amount of data about their behaviours. The system that we can deploy will surface suggestions of artists for our users based on the user's personal similarity with other users, the similarities of artists in addition to the genres and release date affinity (*hybrid method*). 
+* Frequent visitor: this category, will have the `Most Personnalised Recommendation` since we already collected an important amount of data about their behaviours. The system that we can deploy will surface suggestions of artists for our users based on the user's personal similarity with other users, the similarities of artists in addition to the genres and release date affinity (*hybrid method*).  
+
+<br />
 
 # References:
 
 *“Welcome to Surprise' Documentation!¶.” Welcome to Surprise' Documentation! - Surprise 1 Documentation, https://surprise.readthedocs.io/en/stable/.*
 
 *Luo, Shuyu. “Intro to Recommender System: Collaborative Filtering.” Medium, Towards Data Science, 6 Feb. 2019, https://towardsdatascience.com/intro-to-recommender-system-collaborative-filtering-64a238194a26.*
+
+*Evaluation of Recommender Algorithms in Surprise, https://bmanohar16.github.io/blog/recsys-evaluation-in-surprise*  
+
+*Recommender Systems — User-Based and Item-Based Collaborative Filtering, https://medium.com/@cfpinela/recommender-systems-user-based-and-item-based-collaborative-filtering-5d5f375a127f*
+
+*Cold-Start Problem in Recommender Systems and its Mitigation Techniques, https://analyticsindiamag.com/cold-start-problem-in-recommender-systems-and-its-mitigation-techniques/*
+
+*Last.fm – Music Recommendation incorporating social network ties and collaborative filtering, https://blogs.cornell.edu/info2040/2012/09/20/last-fm-music-reccomendation-incorporating-social-network-ties-and-collaborative-filtering/*
+
