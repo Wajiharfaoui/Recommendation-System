@@ -361,3 +361,7 @@ To do so, we thought about categorizing our users into 3 different types:
 
 *Last.fm – Music Recommendation incorporating social network ties and collaborative filtering, https://blogs.cornell.edu/info2040/2012/09/20/last-fm-music-reccomendation-incorporating-social-network-ties-and-collaborative-filtering/*
 
+*Wikimedia Foundation. (2022, March 6). Recommender System. Wikipedia. Retrieved March 9, 2022, https://en.wikipedia.org/wiki/Recommender_system#:~:text=Content%2Dbased%20recommenders%20treat%20recommendation,of%20item%20this%20user%20likes*
+
+*Pinela, C. (2017, November 28). Content-based Recommender Systems. Medium. Retrieved March 9, 2022, https://medium.com/@cfpinela/content-based-recommender-systems-a68c2aee2235 *
+
